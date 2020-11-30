@@ -4,22 +4,47 @@ import numpy as np
 import matplotlib.pyplot as plt
 import ants
 from scipy import ndimage
-from transformations import rotation_matrix
+
 x = np.arange(0,384,10)
 y = np.arange(0,384,10)
 z = np.arange(0,160,10)
 xy,yx,zx = np.meshgrid(x,y,z)
+# xy = xy -384
+# yx = yx -384
+# zx = zx -160
+fig = plt.figure()
+ax = fig.add_subplot(111,projection = '3d')
+ax.scatter(xy,yx,zx)
+ax.set_zlim([0,384])
+plt.xlabel("X")
+plt.ylabel("Y")
+ax.set_zlabel("Z")
+
 normal = np.array([0.75,0,-0.75])
 z_ax = np.array([0,0,1])
 #Angle btw vectors 22 
-v = np.cross(z_ax, normal)
+v = np.cross(z_ax,normal)
 s = np.linalg.norm(v)
 c = np.dot(z_ax, normal)
 I = np.identity (3)
 vx = np.array([[0, -v[2],v[1]],[v[2],0, -v[0]],[-v[1],v[0],0]])
 R = I + vx + np.matmul(vx,vx) * ((1-c)/(s**2))
-angle = np.arccos(c)
-
+angle = np.arccos(c)*180/np.pi
+print(angle)
+xy_new = np.zeros(xy.shape)
+yx_new = np.zeros(yx.shape)
+zx_new = np.zeros(zx.shape)
+Rot = np.array([])
+for i in range(xy_new.shape[0]):
+    for j in range(xy_new.shape[1]):
+        for k in range(xy_new.shape[2]):
+            Rot = np.dot(R,np.array([xy[i,j,k],yx[i,j,k],zx[i,j,k]]))
+            xy_new[i,j,k] = Rot[0]
+            yx_new[i,j,k] = Rot[1]
+            zx_new[i,j,k] = Rot[2]
+ax.scatter(xy_new,yx_new,zx_new,c = 'gray')
+plt.show()
+print("j")
 # new_zx = np.zeros(zx.shape)
 # new_zx = new_zx == 1
 # normal = np.array([0.75,0,-0.75])
