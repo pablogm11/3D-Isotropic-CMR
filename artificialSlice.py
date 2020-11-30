@@ -30,7 +30,7 @@ I = np.identity (3)
 vx = np.array([[0, -v[2],v[1]],[v[2],0, -v[0]],[-v[1],v[0],0]])
 R = I + vx + np.matmul(vx,vx) * ((1-c)/(s**2))
 angle = np.arccos(c)*180/np.pi
-print(angle)
+
 xy_new = np.zeros(xy.shape)
 yx_new = np.zeros(yx.shape)
 zx_new = np.zeros(zx.shape)
