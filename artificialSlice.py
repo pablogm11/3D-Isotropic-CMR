@@ -9,8 +9,11 @@ x = np.arange(0,384,10)
 y = np.arange(0,384,10)
 z = np.arange(0,160,10)
 xy,yx,zx = np.meshgrid(x,y,z)
+xy = xy - np.mean(xy)
+yx = yx - np.mean(yx)
+zx = zx - np.mean(zx)
 ori = np.array([259,5,219])
-normal = np.array([0.75,0,-0.75])
+normal = np.array([0.75,0,0.75])
 new_zx = np.zeros(zx.shape)
 new_zx = new_zx == 1
 ci = 0
@@ -28,14 +31,15 @@ for i in np.arange(0,384,10):
         ci = ci + 1
 fig = plt.figure()
 ax = fig.add_subplot(111,projection = '3d')
-ax.scatter(xy,yx,zx,c = new_zx)
+ax.scatter(xy,yx,zx,c = new_zx,alpha = 0.1)
 ax.set_zlim([0,384])
 plt.xlabel("X")
 plt.ylabel("Y")
 ax.set_zlabel("Z")
 
+normal = np.array([0.75,0,-0.75])
 
-z_ax = np.array([0,0,1])
+z_ax = np.array([0,0,-1])
 #Angle btw vectors 22 
 v = np.cross(z_ax,normal)
 s = np.linalg.norm(v)
@@ -56,7 +60,7 @@ for i in range(xy_new.shape[0]):
             xy_new[i,j,k] = Rot[0]
             yx_new[i,j,k] = Rot[1]
             zx_new[i,j,k] = Rot[2]
-ax.scatter(xy_new,yx_new,zx_new,c = 'gray')
+ax.scatter(xy_new,yx_new,zx_new,c = 'gray',alpha = 0.1)
 plt.show()
 print("j")
 # new_zx = np.zeros(zx.shape)
