@@ -79,14 +79,16 @@ pts = vtk.vtkPoints()
 nPoints = zx_new.shape[0]*zx_new.shape[1]*zx_new.shape[2]
 pts.SetNumberOfPoints(nPoints)
 count = 0
+#Define the points with reoriente coordinates
 for i in range(zx_new.shape[0]):
     for j in range(zx_new.shape[1]):
         for k in range(zx_new.shape[2]):
             pts.SetPoint(count,xy_new[i,j,k],yx_new[i,j,k],zx_new[i,j,k])
             count = count +1
+#Create UNstructured grid and add the points
 ug = vtk.vtkUnstructuredGrid()
 ug.SetPoints(pts)
-
+#Probe filter to extract image pixel intensities in specific coordinates
 probe = vtk.vtkProbeFilter()
 probe.SetInputData(ug)
 probe.SetSourceData(t)
@@ -94,9 +96,11 @@ probe.Update()
 samples = probe.GetOutput()
 samples = samples.GetPointData()
 samples = samples.GetScalars()
+#Create array with all pixel intensities extracted
 arrayOut = vtk.vtkDoubleArray
 for i in range(samples.GetNumberOfTuples()):
     arrayOut.SetTuple1(i,samples.GetTuple1(i))
+#Create Image
 output = vtk.vtkImageData
 #output.
 print("j")
