@@ -4,38 +4,46 @@ import numpy as np
 import matplotlib.pyplot as plt
 import ants
 from scipy import ndimage
+import vtk
 
-x = np.arange(0,384,10)
-y = np.arange(0,384,10)
-z = np.arange(0,160,10)
+#Load original image
+reader = vtk.vtkNIFTIImageReader()
+reader.SetFileName("/media/sf_VB_Folder/Training dataset/training_axial_full_pat0.nii.gz")
+reader.Update()
+t = reader.GetOutput()
+
+x = np.arange(0,t.GetDimensions()[0])
+y = np.arange(0,t.GetDimensions()[1])
+z = np.arange(0,t.GetDimensions()[2])
+
 xy,yx,zx = np.meshgrid(x,y,z)
 xy = xy - np.mean(xy)
 yx = yx - np.mean(yx)
 zx = zx - np.mean(zx)
 ori = np.array([259,5,219])
 normal = np.array([0.75,0,0.75])
-new_zx = np.zeros(zx.shape)
-new_zx = new_zx == 1
-ci = 0
-for i in np.arange(0,384,10):
-        cj = 0
-        for j in np.arange(0,384,10):
-            ck = 0
-            for k in np.arange(0,160,10):
-                if  normal[0]*i + normal[1]*j + normal[2]*k - (normal[0]*ori[0] + normal[1]*ori[1] + normal[2]*ori[2]) == 0:
-                    new_zx[ci,cj,ck] = True
-                else:
-                    new_zx[ci,cj,ck] = False
-                ck = ck +1
-            cj = cj + 1
-        ci = ci + 1
-fig = plt.figure()
-ax = fig.add_subplot(111,projection = '3d')
-ax.scatter(xy,yx,zx,c = new_zx,alpha = 0.1)
-ax.set_zlim([0,384])
-plt.xlabel("X")
-plt.ylabel("Y")
-ax.set_zlabel("Z")
+# new_zx = np.zeros(zx.shape)
+# new_zx = new_zx == 1
+# ci = 0
+# for i in np.arange(0,384,10):
+#         cj = 0
+#         for j in np.arange(0,384,10):
+#             ck = 0
+#             for k in np.arange(0,160,10):
+#                 if  normal[0]*i + normal[1]*j + normal[2]*k - (normal[0]*ori[0] + normal[1]*ori[1] + normal[2]*ori[2]) == 0:
+#                     new_zx[ci,cj,ck] = True
+#                 else:
+#                     new_zx[ci,cj,ck] = False
+#                 ck = ck +1
+#             cj = cj + 1
+#         ci = ci + 1
+# fig = plt.figure()
+# ax = fig.add_subplot(111,projection = '3d')
+# ax.scatter(xy,yx,zx,alpha = 0.1)
+# ax.set_zlim([0,384])
+# plt.xlabel("X")
+# plt.ylabel("Y")
+# ax.set_zlabel("Z")
 
 normal = np.array([0.75,0,-0.75])
 
@@ -60,9 +68,45 @@ for i in range(xy_new.shape[0]):
             xy_new[i,j,k] = Rot[0]
             yx_new[i,j,k] = Rot[1]
             zx_new[i,j,k] = Rot[2]
-ax.scatter(xy_new,yx_new,zx_new,c = 'gray',alpha = 0.1)
-plt.show()
+# ax.scatter(xy_new,yx_new,zx_new,c = 'gray',alpha = 0.1)
+# plt.show()
+
+
+#VTK 
+print("Starting VTK process")
+
+pts = vtk.vtkPoints()
+nPoints = zx_new.shape[0]*zx_new.shape[1]*zx_new.shape[2]
+pts.SetNumberOfPoints(nPoints)
+count = 0
+for i in range(zx_new.shape[0]):
+    for j in range(zx_new.shape[1]):
+        for k in range(zx_new.shape[2]):
+            pts.SetPoint(count,xy_new[i,j,k],yx_new[i,j,k],zx_new[i,j,k])
+            count = count +1
+ug = vtk.vtkUnstructuredGrid()
+ug.SetPoints(pts)
+
+probe = vtk.vtkProbeFilter()
+probe.SetInputData(ug)
+probe.SetSourceData(t)
+probe.Update()
+samples = probe.GetOutput()
+samples = samples.GetPointData()
+samples = samples.GetScalars()
+arrayOut = vtk.vtkDoubleArray
+for i in range(samples.GetNumberOfTuples()):
+    arrayOut.SetTuple1(i,samples.GetTuple1(i))
+output = vtk.vtkImageData
+#output.
 print("j")
+
+
+
+
+
+
+
 # new_zx = np.zeros(zx.shape)
 # new_zx = new_zx == 1
 # normal = np.array([0.75,0,-0.75])
