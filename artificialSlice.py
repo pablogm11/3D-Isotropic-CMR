@@ -65,9 +65,9 @@ for i in range(xy_new.shape[0]):
     for j in range(xy_new.shape[1]):
         for k in range(xy_new.shape[2]):
             Rot = np.dot(R,np.array([xy[i,j,k],yx[i,j,k],zx[i,j,k]]))
-            xy_new[i,j,k] = Rot[0]
-            yx_new[i,j,k] = Rot[1]
-            zx_new[i,j,k] = Rot[2]
+            xy_new[i,j,k] = np.round(Rot[0])
+            yx_new[i,j,k] = np.round(Rot[1])
+            zx_new[i,j,k] = np.round(Rot[2])
 # ax.scatter(xy_new,yx_new,zx_new,c = 'gray',alpha = 0.1)
 # plt.show()
 
@@ -97,9 +97,10 @@ samples = probe.GetOutput()
 samples = samples.GetPointData()
 samples = samples.GetScalars()
 #Create array with all pixel intensities extracted
-arrayOut = vtk.vtkDoubleArray
+w = vtk.vtkDoubleArray()
+w.SetNumberOfTuples(samples.GetNumberOfTuples())
 for i in range(samples.GetNumberOfTuples()):
-    arrayOut.SetTuple1(i,samples.GetTuple1(i))
+    w.SetTuple1(i,samples.GetTuple1(i))
 #Create Image
 output = vtk.vtkImageData
 #output.
