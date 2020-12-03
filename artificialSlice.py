@@ -14,12 +14,15 @@ t = reader.GetOutput()
 
 x = np.arange(0,t.GetDimensions()[0])
 y = np.arange(0,t.GetDimensions()[1])
-z = np.arange(0,t.GetDimensions()[2])
+z = np.arange(0,t.GetDimensions()[2]*2)
 
 xy,yx,zx = np.meshgrid(x,y,z)
-xy = xy - np.mean(xy)
-yx = yx - np.mean(yx)
-zx = zx - np.mean(zx)
+cenX = np.mean(xy)
+cenY = np.mean(yx)
+cenZ = np.mean(zx)
+xy = xy - cenX
+yx = yx - cenY
+zx = zx - cenZ
 ori = np.array([259,5,219])
 normal = np.array([0.75,0,0.75])
 # new_zx = np.zeros(zx.shape)
@@ -57,17 +60,19 @@ vx = np.array([[0, -v[2],v[1]],[v[2],0, -v[0]],[-v[1],v[0],0]])
 R = I + vx + np.matmul(vx,vx) * ((1-c)/(s**2))
 angle = np.arccos(c)*180/np.pi
 print(angle)
-xy_new = np.zeros(xy.shape)
-yx_new = np.zeros(yx.shape)
-zx_new = np.zeros(zx.shape)
+# scale = [int(xy.shape[0]*1.5),int(xy.shape[1]*1.5),int(xy.shape[2]*3)]
+scale = xy.shape
+xy_new = np.zeros(scale)
+yx_new = np.zeros(scale)
+zx_new = np.zeros(scale)
 Rot = np.array([])
 for i in range(xy_new.shape[0]):
     for j in range(xy_new.shape[1]):
         for k in range(xy_new.shape[2]):
             Rot = np.dot(R,np.array([xy[i,j,k],yx[i,j,k],zx[i,j,k]]))
-            xy_new[i,j,k] = np.round(Rot[0])
-            yx_new[i,j,k] = np.round(Rot[1])
-            zx_new[i,j,k] = np.round(Rot[2])
+            xy_new[i,j,k] = np.round(Rot[0]) + cenX
+            yx_new[i,j,k] = np.round(Rot[1]) + cenY
+            zx_new[i,j,k] = np.round(Rot[2]) + cenZ
 # ax.scatter(xy_new,yx_new,zx_new,c = 'gray',alpha = 0.1)
 # plt.show()
 
@@ -85,6 +90,7 @@ for i in range(zx_new.shape[0]):
         for k in range(zx_new.shape[2]):
             pts.SetPoint(count,xy_new[i,j,k],yx_new[i,j,k],zx_new[i,j,k])
             count = count +1
+print("Endding of Point creation")
 #Create UNstructured grid and add the points
 ug = vtk.vtkUnstructuredGrid()
 ug.SetPoints(pts)
@@ -101,9 +107,28 @@ w = vtk.vtkDoubleArray()
 w.SetNumberOfTuples(samples.GetNumberOfTuples())
 for i in range(samples.GetNumberOfTuples()):
     w.SetTuple1(i,samples.GetTuple1(i))
+#Check paraview
+ug.GetPointData().AddArray(w)
+wr = vtk.vtkXMLUnstructuredGridWriter()
+wr.SetInputData(ug)
+wr.SetFileName("test.vtu")
+wr.EncodeAppendedDataOff()
+wr.Write()
 #Create Image
-output = vtk.vtkImageData
+output = vtk.vtkImageData()
+output.SetDimensions(xy_new.shape)
+output.AllocateScalars(vtk.VTK_DOUBLE,1)
+count = 0
+for i in range(zx_new.shape[0]):
+    for j in range(zx_new.shape[1]):
+        for k in range(zx_new.shape[2]):
+            output.SetScalarComponentFromFloat(i,j,k,0,w.GetTuple1(count))
+            count = count + 1
 #output.
+ImgWr =vtk.vtkMetaImageWriter()
+ImgWr.SetFileName('FinalVol.vti')
+ImgWr.SetInputData(output)
+ImgWr.Write()
 print("j")
 
 
