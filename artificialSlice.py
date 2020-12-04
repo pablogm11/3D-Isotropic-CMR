@@ -14,7 +14,8 @@ t = reader.GetOutput()
 
 x = np.arange(0,t.GetDimensions()[0])
 y = np.arange(0,t.GetDimensions()[1])
-z = np.arange(0,t.GetDimensions()[2]*2)
+# z = np.arange(0,t.GetDimensions()[2])
+z = np.linspace(0,t.GetDimensions()[2],16)
 
 xy,yx,zx = np.meshgrid(x,y,z)
 cenX = np.mean(xy)
@@ -24,7 +25,7 @@ xy = xy - cenX
 yx = yx - cenY
 zx = zx - cenZ
 ori = np.array([259,5,219])
-normal = np.array([0.75,0,0.75])
+#normal = np.array([0.75,0,0.75])
 # new_zx = np.zeros(zx.shape)
 # new_zx = new_zx == 1
 # ci = 0
@@ -50,7 +51,7 @@ normal = np.array([0.75,0,0.75])
 
 normal = np.array([0.75,0,-0.75])
 
-z_ax = np.array([0,0,-1])
+z_ax = np.array([0,0,1])
 #Angle btw vectors 22 
 v = np.cross(z_ax,normal)
 s = np.linalg.norm(v)
@@ -70,9 +71,9 @@ for i in range(xy_new.shape[0]):
     for j in range(xy_new.shape[1]):
         for k in range(xy_new.shape[2]):
             Rot = np.dot(R,np.array([xy[i,j,k],yx[i,j,k],zx[i,j,k]]))
-            xy_new[i,j,k] = np.round(Rot[0]) + cenX
-            yx_new[i,j,k] = np.round(Rot[1]) + cenY
-            zx_new[i,j,k] = np.round(Rot[2]) + cenZ
+            xy_new[i,j,k] = Rot[0] + cenX
+            yx_new[i,j,k] = Rot[1] + cenY
+            zx_new[i,j,k] = Rot[2] + cenZ
 # ax.scatter(xy_new,yx_new,zx_new,c = 'gray',alpha = 0.1)
 # plt.show()
 
@@ -118,6 +119,9 @@ wr.Write()
 output = vtk.vtkImageData()
 output.SetDimensions(xy_new.shape)
 output.AllocateScalars(vtk.VTK_DOUBLE,1)
+output.SetDirectionMatrix(R[0,0],R[0,1],R[0,2],R[1,0],R[1,1],R[1,2],R[2,0],R[2,1],R[2,2])
+output.SetOrigin(78.085,-164.968,163.991)
+output.SetSpacing(t.GetSpacing()[0],t.GetSpacing()[0],8)
 count = 0
 for i in range(zx_new.shape[0]):
     for j in range(zx_new.shape[1]):
