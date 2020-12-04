@@ -67,9 +67,9 @@ xy_new = np.zeros(scale)
 yx_new = np.zeros(scale)
 zx_new = np.zeros(scale)
 Rot = np.array([])
-for i in range(xy_new.shape[0]):
-    for j in range(xy_new.shape[1]):
-        for k in range(xy_new.shape[2]):
+for i in range(zx_new.shape[0]):
+    for j in range(zx_new.shape[1]):
+        for k in range(zx_new.shape[2]):
             Rot = np.dot(R,np.array([xy[i,j,k],yx[i,j,k],zx[i,j,k]]))
             xy_new[i,j,k] = Rot[0] + cenX
             yx_new[i,j,k] = Rot[1] + cenY
@@ -119,8 +119,9 @@ wr.Write()
 output = vtk.vtkImageData()
 output.SetDimensions(xy_new.shape)
 output.AllocateScalars(vtk.VTK_DOUBLE,1)
-output.SetDirectionMatrix(R[0,0],R[0,1],R[0,2],R[1,0],R[1,1],R[1,2],R[2,0],R[2,1],R[2,2])
-output.SetOrigin(78.085,-164.968,163.991)
+# output.SetDirectionMatrix(R[0,0],R[0,1],R[0,2],R[1,0],R[1,1],R[1,2],R[2,0],R[2,1],R[2,2])
+# output.SetOrigin(78.085,-164.968,163.991)
+
 output.SetSpacing(t.GetSpacing()[0],t.GetSpacing()[0],8)
 count = 0
 for i in range(zx_new.shape[0]):
@@ -128,12 +129,25 @@ for i in range(zx_new.shape[0]):
         for k in range(zx_new.shape[2]):
             output.SetScalarComponentFromFloat(i,j,k,0,w.GetTuple1(count))
             count = count + 1
-#output.
+    #     print(count)
+    # print(count)
+P000 = pts.GetPoint(0)
+P100 = np.asarray(pts.GetPoint((zx_new.shape[1])*(zx_new.shape[2])))
+P010 = np.asarray(pts.GetPoint(zx_new.shape[2]))
+P001 = np.asarray(pts.GetPoint(1))
+v3 = (P001 - np.asarray(P000))/np.linalg.norm((P001-P000))
+v2 = (P010 - np.asarray(P000))/np.linalg.norm((P010-P000))
+v1 = (P100 - np.asarray(P000))/np.linalg.norm((P100-P000))
+# output.SetDirectionMatrix(v1[0],v1[1],v1[2],v2[0],v2[1],v2[2],v3[0],v3[1],v3[2])
+output.SetOrigin(P000)
+output.SetDirectionMatrix(v1[0],v2[0],v3[0],v1[1],v2[1],v3[1],v1[2],v2[2],v3[2])
+
+
 ImgWr =vtk.vtkMetaImageWriter()
 ImgWr.SetFileName('FinalVol.vti')
 ImgWr.SetInputData(output)
 ImgWr.Write()
-print("j")
+print("END")
 
 
 
