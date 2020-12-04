@@ -131,13 +131,33 @@ for i in range(zx_new.shape[0]):
             count = count + 1
     #     print(count)
     # print(count)
-P000 = pts.GetPoint(0)
-P100 = np.asarray(pts.GetPoint((zx_new.shape[1])*(zx_new.shape[2])))
-P010 = np.asarray(pts.GetPoint(zx_new.shape[2]))
-P001 = np.asarray(pts.GetPoint(1))
+# P000 = pts.GetPoint(0)
+# P100 = np.asarray(pts.GetPoint((zx_new.shape[1])*(zx_new.shape[2])))
+# P010 = np.asarray(pts.GetPoint(zx_new.shape[2]))
+# P001 = np.asarray(pts.GetPoint(1))
+#Point 2
+# P000 = pts.GetPoint((zx_new.shape[1])*(zx_new.shape[2])*(zx_new.shape[0]-1))
+# P100 = np.asarray(pts.GetPoint((zx_new.shape[1])*(zx_new.shape[2])*(zx_new.shape[0]-2)))
+# P010 = np.asarray(pts.GetPoint(zx_new.shape[2]+(zx_new.shape[1])*(zx_new.shape[2])*(zx_new.shape[0]-1)))
+# P001 = np.asarray(pts.GetPoint(1+(zx_new.shape[1])*(zx_new.shape[2])*(zx_new.shape[0]-1)))
+
+#Point 3
+# P000 = pts.GetPoint((zx_new.shape[1])*(zx_new.shape[2])*(zx_new.shape[0]-1)+zx_new.shape[1]-1)
+# P100 = np.asarray(pts.GetPoint((zx_new.shape[1])*(zx_new.shape[2])*(zx_new.shape[0]-2)+zx_new.shape[1]-1))
+# P010 = np.asarray(pts.GetPoint((zx_new.shape[1])*(zx_new.shape[2])*(zx_new.shape[0]-1)+ 2*zx_new.shape[1]-1))
+# P001 = np.asarray(pts.GetPoint((zx_new.shape[1])*(zx_new.shape[2])*(zx_new.shape[0]-1)+zx_new.shape[1]-2))
+#Point 4
+P000 = pts.GetPoint(zx_new.shape[1]-1)
+P100 = np.asarray(pts.GetPoint((zx_new.shape[1])*(zx_new.shape[2]) + zx_new.shape[1]-1))
+P010 = np.asarray(pts.GetPoint(2*zx_new.shape[1]-1))
+P001 = np.asarray(pts.GetPoint(zx_new.shape[1]-2))
+
 v3 = (P001 - np.asarray(P000))/np.linalg.norm((P001-P000))
 v2 = (P010 - np.asarray(P000))/np.linalg.norm((P010-P000))
 v1 = (P100 - np.asarray(P000))/np.linalg.norm((P100-P000))
+print(v1.dot(v2))
+print(v2.dot(v3))
+print(v1.dot(v3))
 # output.SetDirectionMatrix(v1[0],v1[1],v1[2],v2[0],v2[1],v2[2],v3[0],v3[1],v3[2])
 output.SetOrigin(P000)
 output.SetDirectionMatrix(v1[0],v2[0],v3[0],v1[1],v2[1],v3[1],v1[2],v2[2],v3[2])
