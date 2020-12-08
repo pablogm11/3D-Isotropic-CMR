@@ -118,40 +118,59 @@ wr.Write()
 #Create Image
 output = vtk.vtkImageData()
 output.SetDimensions(xy_new.shape)
-output.AllocateScalars(vtk.VTK_DOUBLE,1)
+output.AllocateScalars(vtk.VTK_DOUBLE,0)
 # output.SetDirectionMatrix(R[0,0],R[0,1],R[0,2],R[1,0],R[1,1],R[1,2],R[2,0],R[2,1],R[2,2])
 # output.SetOrigin(78.085,-164.968,163.991)
 
 output.SetSpacing(t.GetSpacing()[0],t.GetSpacing()[0],8)
 count = 0
-for i in range(zx_new.shape[0]):
-    for j in range(zx_new.shape[1]):
+# Axis changed and i,k goes form max to min
+for j in range(zx_new.shape[1]):
+    for i in range(zx_new.shape[0]):
         for k in range(zx_new.shape[2]):
-            output.SetScalarComponentFromFloat(i,j,k,0,w.GetTuple1(count))
+            output.SetScalarComponentFromFloat(zx_new.shape[0]-i-1,j,zx_new.shape[2]-k-1,0,w.GetTuple1(count))
             count = count + 1
     #     print(count)
     # print(count)
-# P000 = pts.GetPoint(0)
-# P100 = np.asarray(pts.GetPoint((zx_new.shape[1])*(zx_new.shape[2])))
-# P010 = np.asarray(pts.GetPoint(zx_new.shape[2]))
-# P001 = np.asarray(pts.GetPoint(1))
+P000 = pts.GetPoint(0)
+P100 = np.asarray(pts.GetPoint((zx_new.shape[1])*(zx_new.shape[2])))
+P010 = np.asarray(pts.GetPoint(zx_new.shape[2]))
+P001 = np.asarray(pts.GetPoint(1))
 #Point 2
 # P000 = pts.GetPoint((zx_new.shape[1])*(zx_new.shape[2])*(zx_new.shape[0]-1))
 # P100 = np.asarray(pts.GetPoint((zx_new.shape[1])*(zx_new.shape[2])*(zx_new.shape[0]-2)))
 # P010 = np.asarray(pts.GetPoint(zx_new.shape[2]+(zx_new.shape[1])*(zx_new.shape[2])*(zx_new.shape[0]-1)))
 # P001 = np.asarray(pts.GetPoint(1+(zx_new.shape[1])*(zx_new.shape[2])*(zx_new.shape[0]-1)))
-
 #Point 3
 # P000 = pts.GetPoint((zx_new.shape[1])*(zx_new.shape[2])*(zx_new.shape[0]-1)+zx_new.shape[1]-1)
 # P100 = np.asarray(pts.GetPoint((zx_new.shape[1])*(zx_new.shape[2])*(zx_new.shape[0]-2)+zx_new.shape[1]-1))
 # P010 = np.asarray(pts.GetPoint((zx_new.shape[1])*(zx_new.shape[2])*(zx_new.shape[0]-1)+ 2*zx_new.shape[1]-1))
 # P001 = np.asarray(pts.GetPoint((zx_new.shape[1])*(zx_new.shape[2])*(zx_new.shape[0]-1)+zx_new.shape[1]-2))
 #Point 4
-P000 = pts.GetPoint(zx_new.shape[1]-1)
-P100 = np.asarray(pts.GetPoint((zx_new.shape[1])*(zx_new.shape[2]) + zx_new.shape[1]-1))
-P010 = np.asarray(pts.GetPoint(2*zx_new.shape[1]-1))
-P001 = np.asarray(pts.GetPoint(zx_new.shape[1]-2))
-
+# P000 = pts.GetPoint(zx_new.shape[1]-1)
+# P100 = np.asarray(pts.GetPoint((zx_new.shape[1])*(zx_new.shape[2]) + zx_new.shape[1]-1))
+# P010 = np.asarray(pts.GetPoint(2*zx_new.shape[1]-1))
+# P001 = np.asarray(pts.GetPoint(zx_new.shape[1]-2))
+#Point 5
+# P000 = pts.GetPoint(zx_new.shape[1]*zx_new.shape[2]-1)
+# P100 = np.asarray(pts.GetPoint(zx_new.shape[1]*zx_new.shape[2]*2-1))
+# P010 = np.asarray(pts.GetPoint((zx_new.shape[1]-1)*zx_new.shape[2]-1))
+# P001 = np.asarray(pts.GetPoint(zx_new.shape[1]*zx_new.shape[2]-2))
+#Point 6
+# P000 = pts.GetPoint((zx_new.shape[1]-1)*zx_new.shape[2])
+# P100 = np.asarray(pts.GetPoint((zx_new.shape[1])*zx_new.shape[2] + (zx_new.shape[1]-1)*zx_new.shape[2]))
+# P010 = np.asarray(pts.GetPoint((zx_new.shape[1]-2)*zx_new.shape[2]))
+# P001 = np.asarray(pts.GetPoint((zx_new.shape[1]-1)*zx_new.shape[2]+1))
+#point 7 
+# P000 = pts.GetPoint((zx_new.shape[1])*zx_new.shape[2]*zx_new.shape[0]-1)
+# P100 = np.asarray(pts.GetPoint((zx_new.shape[1])*zx_new.shape[2]*(zx_new.shape[0]-1)-1))
+# P010 = np.asarray(pts.GetPoint((zx_new.shape[1])*zx_new.shape[2]*zx_new.shape[0] - zx_new.shape[2]-1 ))
+# P001 = np.asarray(pts.GetPoint((zx_new.shape[1])*zx_new.shape[2]*zx_new.shape[0]  -2))
+#Point 8
+# P000 = pts.GetPoint((zx_new.shape[1])*zx_new.shape[2]*zx_new.shape[0] - zx_new.shape[2])
+# P100 = np.asarray(pts.GetPoint((zx_new.shape[1])*zx_new.shape[2]*(zx_new.shape[0]-1) - zx_new.shape[2]))
+# P010 = np.asarray(pts.GetPoint((zx_new.shape[1])*zx_new.shape[2]*zx_new.shape[0] - 2*zx_new.shape[2] ))
+# P001 = np.asarray(pts.GetPoint((zx_new.shape[1])*zx_new.shape[2]*zx_new.shape[0] - zx_new.shape[2] + 1))
 v3 = (P001 - np.asarray(P000))/np.linalg.norm((P001-P000))
 v2 = (P010 - np.asarray(P000))/np.linalg.norm((P010-P000))
 v1 = (P100 - np.asarray(P000))/np.linalg.norm((P100-P000))
@@ -159,13 +178,15 @@ print(v1.dot(v2))
 print(v2.dot(v3))
 print(v1.dot(v3))
 # output.SetDirectionMatrix(v1[0],v1[1],v1[2],v2[0],v2[1],v2[2],v3[0],v3[1],v3[2])
-output.SetOrigin(P000)
-output.SetDirectionMatrix(v1[0],v2[0],v3[0],v1[1],v2[1],v3[1],v1[2],v2[2],v3[2])
 
+# output.SetOrigin(np.dot(R,np.array([78.085,-164.968,163.991])))
+# output.SetOrigin(P000)
+# output.SetDirectionMatrix(v1[0],v2[0],v3[0],v1[1],v2[1],v3[1],v1[2],v2[2],v3[2])
+# output.SetDirectionMatrix(0.5,0.5,0,0,1,0,0,0,1)
 
 ImgWr =vtk.vtkMetaImageWriter()
-ImgWr.SetFileName('FinalVol.vti')
-ImgWr.SetInputData(output)
+ImgWr.SetFileName('FinalVolMod.vti')
+ImgWr.SetInputDataObject(output)
 ImgWr.Write()
 print("END")
 
