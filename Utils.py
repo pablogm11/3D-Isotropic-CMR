@@ -1,13 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import ants
-import os
+# import os
 from  pydicom import dcmread
 from  pydicom.data import get_testdata_file 
-from nipype import Node, Workflow
-from nipype.interfaces.ants import N4BiasFieldCorrection
+# from nipype import Node, Workflow
+# from nipype.interfaces.ants import N4BiasFieldCorrection
 import nibabel as nib
-import SimpleITK as sitk
+# import SimpleITK as sitk
 
 def cheBoard (img1, img2, samples,roi):
     count = 0
@@ -53,6 +53,7 @@ def overROI (images,transformation,fixed):
 def mainRegScript(patientPath,SA_name,LA_4CH_name,LA_2CH_name,pathSave,typeRe):
     #Load initial images
     SA = ants.image_read(patientPath+SA_name)
+    SA = ants.resample_image(SA,[min(SA.spacing),min(SA.spacing),min(SA.spacing)])
     LA_4CH = ants.image_read(patientPath+LA_4CH_name)
     LA_2CH = ants.image_read(patientPath+LA_2CH_name)
 
@@ -114,4 +115,6 @@ def mainRegScript(patientPath,SA_name,LA_4CH_name,LA_2CH_name,pathSave,typeRe):
     nib.save(chest_4CH,pathSave + 'chest_4CH.nii')
     nib.save(chest_2CH,pathSave + 'chest_2CH.nii')
     print("Done")
+    final = (SA,regSA_4CH,regSA_2CH)
+    return final
 
